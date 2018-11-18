@@ -1,0 +1,3 @@
+[submodule "library/src/main/native/selinux"]
+	path = library/src/main/native/selinux
+	url = https://android.googlesource.com/platform/external/selinux

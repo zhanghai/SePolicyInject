@@ -1,0 +1,90 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+# See https://android.googlesource.com/platform/external/selinux/+/master/libsepol/Android.bp
+find_package(FLEX)
+FLEX_TARGET(sepol_cil_lexer
+        src/main/native/selinux/libsepol/cil/src/cil_lexer.l
+        ${CMAKE_CURRENT_BINARY_DIR}/libsepol_cil_lexer.c)
+add_library(sepol STATIC
+        src/main/native/selinux/libsepol/src/assertion.c
+        src/main/native/selinux/libsepol/src/avrule_block.c
+        src/main/native/selinux/libsepol/src/avtab.c
+        src/main/native/selinux/libsepol/src/boolean_record.c
+        src/main/native/selinux/libsepol/src/booleans.c
+        src/main/native/selinux/libsepol/src/conditional.c
+        src/main/native/selinux/libsepol/src/constraint.c
+        src/main/native/selinux/libsepol/src/context.c
+        src/main/native/selinux/libsepol/src/context_record.c
+        src/main/native/selinux/libsepol/src/debug.c
+        src/main/native/selinux/libsepol/src/ebitmap.c
+        src/main/native/selinux/libsepol/src/expand.c
+        src/main/native/selinux/libsepol/src/genbools.c
+        src/main/native/selinux/libsepol/src/genusers.c
+        src/main/native/selinux/libsepol/src/handle.c
+        src/main/native/selinux/libsepol/src/hashtab.c
+        src/main/native/selinux/libsepol/src/hierarchy.c
+        src/main/native/selinux/libsepol/src/iface_record.c
+        src/main/native/selinux/libsepol/src/interfaces.c
+        src/main/native/selinux/libsepol/src/kernel_to_cil.c
+        src/main/native/selinux/libsepol/src/kernel_to_common.c
+        src/main/native/selinux/libsepol/src/kernel_to_conf.c
+        src/main/native/selinux/libsepol/src/link.c
+        src/main/native/selinux/libsepol/src/mls.c
+        src/main/native/selinux/libsepol/src/module.c
+        src/main/native/selinux/libsepol/src/module_to_cil.c
+        src/main/native/selinux/libsepol/src/node_record.c
+        src/main/native/selinux/libsepol/src/nodes.c
+        src/main/native/selinux/libsepol/src/polcaps.c
+        src/main/native/selinux/libsepol/src/policydb.c
+        src/main/native/selinux/libsepol/src/policydb_convert.c
+        src/main/native/selinux/libsepol/src/policydb_public.c
+        src/main/native/selinux/libsepol/src/port_record.c
+        src/main/native/selinux/libsepol/src/ports.c
+        src/main/native/selinux/libsepol/src/roles.c
+        src/main/native/selinux/libsepol/src/services.c
+        src/main/native/selinux/libsepol/src/sidtab.c
+        src/main/native/selinux/libsepol/src/symtab.c
+        src/main/native/selinux/libsepol/src/user_record.c
+        src/main/native/selinux/libsepol/src/users.c
+        src/main/native/selinux/libsepol/src/util.c
+        src/main/native/selinux/libsepol/src/write.c
+        src/main/native/selinux/libsepol/cil/src/android.c
+        src/main/native/selinux/libsepol/cil/src/cil_binary.c
+        src/main/native/selinux/libsepol/cil/src/cil_build_ast.c
+        src/main/native/selinux/libsepol/cil/src/cil.c
+        src/main/native/selinux/libsepol/cil/src/cil_copy_ast.c
+        src/main/native/selinux/libsepol/cil/src/cil_find.c
+        src/main/native/selinux/libsepol/cil/src/cil_fqn.c
+        #src/main/native/selinux/libsepol/cil/src/cil_lexer.l
+        ${FLEX_sepol_cil_lexer_OUTPUTS}
+        src/main/native/selinux/libsepol/cil/src/cil_list.c
+        src/main/native/selinux/libsepol/cil/src/cil_log.c
+        src/main/native/selinux/libsepol/cil/src/cil_mem.c
+        src/main/native/selinux/libsepol/cil/src/cil_parser.c
+        src/main/native/selinux/libsepol/cil/src/cil_policy.c
+        src/main/native/selinux/libsepol/cil/src/cil_post.c
+        src/main/native/selinux/libsepol/cil/src/cil_reset_ast.c
+        src/main/native/selinux/libsepol/cil/src/cil_resolve_ast.c
+        src/main/native/selinux/libsepol/cil/src/cil_stack.c
+        src/main/native/selinux/libsepol/cil/src/cil_strpool.c
+        src/main/native/selinux/libsepol/cil/src/cil_symtab.c
+        src/main/native/selinux/libsepol/cil/src/cil_tree.c
+        src/main/native/selinux/libsepol/cil/src/cil_verify.c
+        src/main/native/selinux/libsepol/cil/src/cil_write_ast.c)
+target_compile_definitions(sepol
+        PRIVATE
+        -D_GNU_SOURCE)
+target_include_directories(sepol
+        PRIVATE
+        src/main/native/selinux/libsepol/cil/src
+        src/main/native/selinux/libsepol/src
+        PUBLIC
+        src/main/native/selinux/libsepol/cil/include
+        src/main/native/selinux/libsepol/include)
+
+add_library(sepolicyinject SHARED
+        src/main/native/sepolicyinject.c)
+find_library(log_LIBRARY log)
+target_link_libraries(sepolicyinject
+        ${log_LIBRARY}
+        sepol)
